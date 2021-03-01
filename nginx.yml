@@ -1,0 +1,41 @@
+---
+- hosts: linux
+  gather_facts: no
+  vars:
+   package: nginx
+  tasks:
+
+  - name: check service facts
+    service_facts:
+
+  - name: Print of nginx service existe
+    debug:
+     msg: "nginx service running"
+    when: '"nginx.service" in services'
+
+  - name: Print of nginx service not  existe
+    debug:
+     msg: "nginx service not running"
+    when: '"nginx" not in services'
+  
+
+  - name: install nginx if not already installed
+    yum:
+     name: nginx
+     state: latest
+    when: '"nginx.service" not in services'
+
+  - name: copy latest nginx config file
+    copy: 
+     src: ./nginx.conf
+     dest: /etc/nginx/nginx.conf
+     force: yes
+    when: ('"nginx.service" not in services') or ('"nginx.service" in services')
+
+
+  - name: restart and enable nginx service
+    service:
+     name: nginx
+     state: restarted
+     enabled: yes
+    when: ('"nginx.service" not in services') or ('"nginx.service" in services')
