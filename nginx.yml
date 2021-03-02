@@ -1,5 +1,5 @@
 ---
-- hosts: linux
+- hosts: localhost
   gather_facts: no
   vars:
    package: nginx
